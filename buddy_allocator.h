@@ -21,6 +21,6 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
 
 void BuddyAllocator_free(BuddyAllocator* alloc, void* mem);
 
-int from_level_to_bits (int level);
+
 
 
