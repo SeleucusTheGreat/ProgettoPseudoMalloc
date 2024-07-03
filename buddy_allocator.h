@@ -1,7 +1,7 @@
 #pragma once
 #include "bit_map.h"
 
-#define MAX_LEVELS 
+#define MAX_LEVELS 32
 
 typedef struct {
   BitMap bitmap;
@@ -12,7 +12,7 @@ typedef struct {
 
 void BuddyAllocator_init(BuddyAllocator* alloc,
                          int num_levels,
-                         char* bitmap_buffer,
+                         uint8_t* bitmap_buffer,
                          int buffer_size,
                          char* memory,
                          int min_bucket_size);
@@ -22,5 +22,5 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
 void BuddyAllocator_free(BuddyAllocator* alloc, void* mem);
 
 
-
+void BuddyAllocator_printBitmap(BuddyAllocator* alloc);
 
