@@ -29,18 +29,20 @@ void BitMap_setBit(BitMap* bit_map, int bit_num, int status){
 
   //printf("the bit in byte should be %d\n",bit_in_byte );
   if (status) {
-    if (bit_in_byte == 0)
-    bit_map->buffer[byte_num] |= (1<<(bit_in_byte-1));
+    bit_map->buffer[byte_num] |= (1<<(bit_in_byte));
   } else {
-    bit_map->buffer[byte_num] &= ~(1<<(bit_in_byte-1));
+    bit_map->buffer[byte_num] &= ~(1<<(bit_in_byte));
   }
 }
 
 // inspects the status of the bit bit_num
 int BitMap_bit(BitMap* bit_map, int bit_num){
   int byte_num=bit_num>>3; 
-  int bit_in_byte=bit_num&0x07;
-  return (bit_map->buffer[byte_num] & (1<<(bit_in_byte-1)))!=0;
+  int bit_in_byte=bit_num&0x07; 
+  
+  int result = (bit_map->buffer[byte_num] & (1<<(bit_in_byte)))!=0;
+
+  return result; 
 }
 
 //put all the bits of the bitmap to
