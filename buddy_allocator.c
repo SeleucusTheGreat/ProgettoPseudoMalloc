@@ -128,7 +128,7 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level) {
     int index = find_free_buddy(alloc, level);
     if (index == -1) { // No buddies on this level
         if (level == -1) // We are at the root
-            return 0; // No space available
+            return -1; // No space available
         
         //printf("I haven't found a buddy at level %d\n", level);
         // Get a buddy from a higher level
@@ -159,9 +159,12 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level) {
 
 void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
 
-  
+  if (size > alloc->memory_size -  (int) sizeof(int) ) {
+    printf("memory asked too big\n");
+    return NULL;
+  }
 	
-	assert(size <= alloc->memory_size -  (int) sizeof(int) );//check if we actually have the right amount of memory
+	
 
 	
 	int level = findLevel(size,alloc->memory_size);//we get the correct level 
@@ -248,7 +251,7 @@ void BuddyAllocator_printBitmap(BuddyAllocator* alloc) {
             }
         }
 
-        printf("---this level from %d to %d ", start_idx, end_idx);
+        printf("   this level from %d to %d ", start_idx, end_idx);
 
         printf("\n");
     }

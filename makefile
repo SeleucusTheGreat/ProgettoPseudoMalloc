@@ -1,13 +1,13 @@
 CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror -g
-SRC = bit_map.c buddy_allocator.c buddy_allocator_tests.c
-HEADERS = bit_map.h buddy_allocator.h
+SRC = bit_map.c buddy_allocator.c tests.c malloc_mmap.c
+HEADERS = bit_map.h buddy_allocator.h malloc_mmap.h
 
 
 OBJ = $(SRC:.c=.o)
 
-TARGET = buddy_allocator_tests
+TARGET = tests
 
 
 all: $(TARGET)
