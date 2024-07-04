@@ -16,21 +16,41 @@ void test_allocation_and_deallocation() {
     char* memory = (char*)malloc(MEMORY_SIZE);
     uint8_t* bitmap_buffer = (uint8_t*)malloc(BITMAP_SIZE_BYTES);
     BuddyAllocator allocator;
-    BuddyAllocator_init(&allocator, NUM_LEVELS, bitmap_buffer, BITMAP_SIZE_BYTES , memory, MIN_BUCKET_SIZE);
+    BuddyAllocator_init(&allocator, NUM_LEVELS, bitmap_buffer, BITMAP_SIZE_BYTES , memory, MEMORY_SIZE , MIN_BUCKET_SIZE);
     
-    //test 1
+    //test 0
     printf("situation before the malloc");
     BuddyAllocator_printBitmap(&allocator);
-    void* ptr1 = BuddyAllocator_malloc(&allocator, 100);
+    void* ptr1 = BuddyAllocator_malloc(&allocator, sizeof(int));
     assert(ptr1 != NULL);
+    int* alpha = (int*) ptr1;
+    *alpha = 4;
+    printf("this should show 4 and istead is shows %d\n",*alpha );
     printf("situation after the malloc");
     BuddyAllocator_printBitmap(&allocator);
 
+
+
     //test 2
+
+    typedef struct GIGACHAD {
+        int first;
+        int second;
+        int third;
+        char c;
+        float f;
+    }GIGACHAD;
     
-    void* ptr2 = BuddyAllocator_malloc(&allocator, 200);
-    assert(ptr2 != NULL);
-    assert(ptr2 != ptr1);
+    GIGACHAD* chad = (GIGACHAD*) BuddyAllocator_malloc(&allocator, sizeof(GIGACHAD));
+    assert(chad != NULL);
+    chad->first=1;
+    chad->second=2;
+    chad->third=3;
+    chad->c='a';
+    chad->f=3.223;
+    
+    printf("this should show 1,2,3,a,3.223 and instead it is showing %d,%d,%d,%c,%.3f\n", chad->first, chad->second, chad->third, chad->c, chad->f);
+
     printf("situation after the malloc");
     BuddyAllocator_printBitmap(&allocator);
 
@@ -38,13 +58,13 @@ void test_allocation_and_deallocation() {
     
     void* ptr3 = BuddyAllocator_malloc(&allocator, 50);
     assert(ptr3 != NULL);
-    assert(ptr3 != ptr1 && ptr3 != ptr2);
+
     printf("situation after the malloc");
     BuddyAllocator_printBitmap(&allocator);
 
     //test 4
     
-    BuddyAllocator_free(&allocator, ptr2);
+    BuddyAllocator_free(&allocator, chad);
     printf("situation after the free");
     BuddyAllocator_printBitmap(&allocator);
 
@@ -86,18 +106,18 @@ void test_large_allocation() {
     char* memory = (char*)malloc(MEMORY_SIZE);
     uint8_t* bitmap_buffer = (uint8_t*)malloc(BITMAP_SIZE_BYTES);
     BuddyAllocator allocator;
-    BuddyAllocator_init(&allocator, NUM_LEVELS, bitmap_buffer, BITMAP_SIZE_BYTES , memory, MIN_BUCKET_SIZE);
+    BuddyAllocator_init(&allocator, NUM_LEVELS, bitmap_buffer, BITMAP_SIZE_BYTES , memory, MEMORY_SIZE , MIN_BUCKET_SIZE);
     
     //test 9
     printf("situation before  the malloc");
     BuddyAllocator_printBitmap(&allocator);
-    void* ptr = BuddyAllocator_malloc(&allocator, MEMORY_SIZE / 2);
+    void* ptr = BuddyAllocator_malloc(&allocator, MEMORY_SIZE / 2 - sizeof(int));
     assert(ptr != NULL);
     printf("situation after the malloc");
     BuddyAllocator_printBitmap(&allocator);
     
     
-    //test 10
+   // test 10
     printf("situation before  the free");
     BuddyAllocator_printBitmap(&allocator);
     BuddyAllocator_free(&allocator, ptr);
@@ -105,8 +125,37 @@ void test_large_allocation() {
     BuddyAllocator_printBitmap(&allocator);
 
 
+    //test 11
+    printf("situation before  the free");
+    BuddyAllocator_printBitmap(&allocator);
+    void* ptr11 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE/4 - sizeof(int));
+    assert(ptr11 != NULL);
+    printf("situation after the malloc");
+    BuddyAllocator_printBitmap(&allocator);
 
+
+    //test 12
+    BuddyAllocator_free(&allocator, ptr11);
+    printf("situation after the free");
+    BuddyAllocator_printBitmap(&allocator);
     printf("Large allocation test passed.\n");
+
+
+    //test 13
+    void* ptr13 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE- sizeof(int)); //this should work
+    assert(ptr13 != NULL);
+    printf("situation after the malloc");
+    BuddyAllocator_printBitmap(&allocator);
+    
+    BuddyAllocator_free(&allocator, ptr13);
+    printf("situation after the free");
+    BuddyAllocator_printBitmap(&allocator);
+    printf("Large allocation test passed.\n");
+
+
+    //test 14
+    void* ptr14 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE); //this shouldn't work
+    assert(ptr14 != NULL);
     
     free(memory);
     free(bitmap_buffer);

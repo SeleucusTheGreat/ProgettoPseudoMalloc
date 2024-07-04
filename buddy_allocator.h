@@ -7,7 +7,9 @@ typedef struct {
   BitMap bitmap;
   int num_levels;
   char* memory; 
+  int memory_size;
   int min_bucket_size; 
+
 } BuddyAllocator;
 
 void BuddyAllocator_init(BuddyAllocator* alloc,
@@ -15,6 +17,7 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
                          uint8_t* bitmap_buffer,
                          int buffer_size,
                          char* memory,
+                         int memory_size,
                          int min_bucket_size);
 
 void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);

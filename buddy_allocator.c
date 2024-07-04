@@ -5,37 +5,37 @@
 #include <stdio.h>
 
 int levelIdx(int idx){
-  return (int)floor(log2(idx));
+  return (int)floor(log2(idx+1));
 }
 
 int buddyIdx(int idx){
-  if (idx ==1)
-    return 2;
-  if (idx ==2)
-    return 1;
+  if (idx == 0)
+    return -1;
+  
 
   if (idx & 0x1){
-      return idx - 1;
+      return idx + 1;
   }
   
-  return idx + 1;
+  return idx - 1;
 }
 
 
 int parentIdx(int idx){
-  if (idx == 1)
-    return 0;
-  
-  if (idx == 2)
-    return 0;
-
-  return idx / 2;
+  return (idx - 1) / 2;
 }
 
 
+int leftSonIdx(int idx) {
+    return (idx*2)+1;
+}
+
+int rightSonIdx(int idx) {
+    return (idx*2)+2;
+}
 
 int startIdx(int idx){
-  return (idx-(1<<levelIdx(idx)));
+  return (idx +1-(1<<levelIdx(idx)));
 }
 
 
@@ -44,6 +44,18 @@ int from_level_to_bits (int level){
 }
 
 
+int findLevel(int memory_req, int size_aval) {
+    int size_with_int = memory_req + sizeof(int);
+    int level = (int)floor(log2(size_aval / size_with_int));
+    int max_allowed_size = size_aval / (1 << level);
+
+    // Ensure the size does not exceed the maximum allowed size for the calculated level
+    if (memory_req > max_allowed_size) {
+        level--;
+    }
+
+    return level;
+}
 
 
 
@@ -52,6 +64,7 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
                          uint8_t* bitmap_buffer,
                          int buffer_size,
                          char* memory,
+                         int memory_size,
                          int min_bucket_size) {
 
 	assert(num_levels <= MAX_LEVELS );
@@ -60,7 +73,7 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
 	alloc -> num_levels = num_levels;
 	alloc -> memory = memory;
 	alloc -> min_bucket_size = min_bucket_size;
-	
+	alloc -> memory_size = memory_size;
        
   BitMap* bitmap = &alloc->bitmap;
   BitMap_init(bitmap, buffer_size,  (uint8_t*) bitmap_buffer ); //we initialize the bitmap
@@ -97,36 +110,33 @@ int find_free_buddy(BuddyAllocator* alloc, int level) { //return the first free 
 }
 
 void split_buddy(BuddyAllocator* alloc, int idx) { //split the buddy and put 0 in the current buddy
-  if (idx==0) {
-    BitMap_setBit(&alloc->bitmap, idx, 0);
-    BitMap_setBit(&alloc->bitmap, 1, 1);
-    BitMap_setBit(&alloc->bitmap, 2, 1);
-  }
+  assert(idx >= 0);
   
-  if (idx!=0){
   BitMap_setBit(&alloc->bitmap, idx, 0);
-  BitMap_setBit(&alloc->bitmap, idx * 2, 1);
-  BitMap_setBit(&alloc->bitmap, idx * 2 + 1, 1);
-  }
+  BitMap_setBit(&alloc->bitmap, leftSonIdx(idx), 1);
+  BitMap_setBit(&alloc->bitmap, rightSonIdx(idx), 1);
+  
+ 
 }
 
 
 
 int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level) {
     if (level < 0)
-        return 0;
-    assert(level <= alloc->num_levels);
+        return -1;
+    
     int index = find_free_buddy(alloc, level);
     if (index == -1) { // No buddies on this level
-        if (level == 0) // We are at the root
+        if (level == -1) // We are at the root
             return 0; // No space available
+        
         //printf("I haven't found a buddy at level %d\n", level);
         // Get a buddy from a higher level
         index = BuddyAllocator_getBuddy(alloc, level - 1);
         
         
         if (index == -1) // No buddy available at any higher level
-            return 0;
+            return -1;
 
         // Split the found buddy
         split_buddy(alloc, index);
@@ -135,8 +145,8 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level) {
         if(index==0) {
           index = 1;
         }
-        if (index!=0) {
-        index = index * 2;
+        else {
+        index = leftSonIdx(index);
         }
     }
     //printf("I've found a buddy at level %d with index %d\n", level, index);
@@ -150,39 +160,43 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level) {
 void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
 
   
-	int memory_size = (int) (1<<alloc->num_levels)*alloc->min_bucket_size; //get the size of the memory total
-	assert(size <= memory_size -  (int) sizeof(int) );//check if we actually have the right amount of memory
 	
-	 int level = (int)floor(log2((double)memory_size / (size + sizeof(int)))); //we get the correct level 
+	assert(size <= alloc->memory_size -  (int) sizeof(int) );//check if we actually have the right amount of memory
+
+	
+	int level = findLevel(size,alloc->memory_size);//we get the correct level 
 	
 	// if the level is too small, we pad it to max
-  	if (level>alloc->num_levels){
+  if (level>alloc->num_levels){
     		level=alloc->num_levels;
-    	}
+  }
     	
-    	printf("requested: %d bytes, level %d \n", size, level);
+  printf("requested: %d bytes, level %d \n", size, level);
     	
-    	int index = BuddyAllocator_getBuddy(alloc, level); //get the index of the best buddy we can get
+  int index = BuddyAllocator_getBuddy(alloc, level); //get the index of the best buddy we can get
     	
-    	if (index == -1) {
-    		return 0; // no buddy no party 
-	    }
-    	printf("I'm going to set a bit in index:%d considering my bitmap has %d bits\n", index, from_level_to_bits(alloc->num_levels));
-    	BitMap_setBit(&alloc->bitmap, index, 0); //set the bit of the index 
+  if (index == -1) {
+    printf("Error: Out of memory\n");
+    return NULL; // no buddy no party 
+	}
+  printf("I'm going to set a bit in index:%d ", index);
+  BitMap_setBit(&alloc->bitmap, index, 0); //set the bit of the index 
     	
     	// we get the block size of the current level
-    	int block_size = alloc->min_bucket_size * (1 << (alloc->num_levels - level)); 
+  
+  
+  int block_size = alloc->memory_size / (1 << level);
     	
     	
-    	int start_index = startIdx(index); //we get the start index
+  int start_index = startIdx(index); //we get the start index
     	
     	
     	
-    	char* block_start = alloc->memory + (start_index * block_size); //the block we want to release
+  char* block_start = alloc->memory + (start_index * block_size); //the block we want to release
     	
-    	*(int*)(block_start) = index; //we put the index inside the first sizeof(int) bytes
+  *(int*)(block_start) = index; //we put the index inside the first sizeof(int) bytes
       
-      return block_start + sizeof(int); // but we return the block after the part we saved the index
+  return block_start + sizeof(int); // but we return the block after the part we saved the index
     	
 }
 
@@ -234,7 +248,7 @@ void BuddyAllocator_printBitmap(BuddyAllocator* alloc) {
             }
         }
 
-        
+        printf("---this level from %d to %d ", start_idx, end_idx);
 
         printf("\n");
     }

@@ -23,7 +23,7 @@ void BitMap_init(BitMap* bit_map, int buffer_size , uint8_t* buffer){
 // status= 0 or 1
 void BitMap_setBit(BitMap* bit_map, int bit_num, int status){
   // get byte
-  int byte_num=bit_num>>3;
+  int byte_num=bit_num/8;
   //printf("the byte is %d\n",byte_num );
   int bit_in_byte=bit_num&0x07;
 
@@ -37,7 +37,7 @@ void BitMap_setBit(BitMap* bit_map, int bit_num, int status){
 
 // inspects the status of the bit bit_num
 int BitMap_bit(BitMap* bit_map, int bit_num){
-  int byte_num=bit_num>>3; 
+  int byte_num=bit_num/8; 
   int bit_in_byte=bit_num&0x07; 
   
   int result = (bit_map->buffer[byte_num] & (1<<(bit_in_byte)))!=0;
