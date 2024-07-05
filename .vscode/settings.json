@@ -1,6 +1,19 @@
 {
     "C_Cpp.errorSquiggles": "enabled",
     "files.associations": {
-        "mman.h": "c"
+        "mman.h": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c",
+        "malloc_mmap.h": "c",
+        "stdio.h": "c",
+        "bit_map.h": "c",
+        "string.h": "c",
+        "buddy_allocator.h": "c",
+        "assert.h": "c",
+        "stdlib.h": "c",
+        "unistd.h": "c",
+        "pseudomalloc.h": "c"
     }
 }

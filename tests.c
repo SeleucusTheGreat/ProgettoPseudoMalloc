@@ -4,6 +4,7 @@
 #include <string.h>
 #include "buddy_allocator.h"
 #include "malloc_mmap.h"
+#include "pseudoMalloc.h"
 
  
 #define MEMORY_SIZE (1 << 20)  // 1MB
