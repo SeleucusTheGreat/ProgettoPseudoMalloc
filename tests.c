@@ -242,11 +242,15 @@ void mmap_tests() {
     printf("malloc_mmap allocation test passed.\n");
 }
 
+void pseudoMalloc_tests() {
+        //tests here
+}
 
 int main() {
     small_buddy_tests();
     big_buddy_tests();
     mmap_tests();
+    pseudoMalloc_tests();
     printf("All tests passed successfully!\n");
     return 0;
 }

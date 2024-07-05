@@ -27,7 +27,31 @@ void pseudoMallocInit() {
     printf("page size is %d\n",str.PAGE_SIZE); 
 }
 
+void* PseudoMalloc(int size) {
+    if (size<=0) return;
+    if (size>str.MAX_SIZE_MMAP) return;
 
+    if (size >str.BUDDY_MAX_SIZE) {
+        malloc_mmap(size);
+    }
+    else {
+        BuddyAllocator_malloc(&str.buddy, size);
+    }
+}
 
+void PseudoFree(void* memory){
+    if (memory==NULL) return;
+    char* block_start =(char*) memory; 
+    block_start = block_start - sizeof(int);  
+    int value = *(int*)block_start; 
+
+    if(value <= str.KEY_VALUE ) {
+        BuddyAllocator_free(&str.buddy, memory);
+    }
+    else {
+        free_mmap(memory);
+    }
+
+}
 
 
