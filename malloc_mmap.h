@@ -2,4 +2,4 @@
 
 
 void* malloc_mmap(int size);
-void free_mmap(void* memory, int size); 
+void free_mmap(void* memory); 

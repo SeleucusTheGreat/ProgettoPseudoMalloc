@@ -251,7 +251,7 @@ void BuddyAllocator_printBitmap(BuddyAllocator* alloc) {
             }
         }
 
-        printf("   this level from %d to %d ", start_idx, end_idx);
+        //printf("   this level from %d to %d ", start_idx, end_idx);
 
         printf("\n");
     }
