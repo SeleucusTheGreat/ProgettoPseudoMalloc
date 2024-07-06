@@ -86,11 +86,11 @@ void BuddyAllocator_init(BuddyAllocator* alloc,
   
 
 
-	printf("BUDDY INITIALIZING\n");
-  printf("\tlevels: %d\n", num_levels);
-  printf("\tbitmap size: %d bits or %d bytes\n", bitmap->num_bits,bitmap->buffer_size);
-  printf("\tbucket size:%d\n", min_bucket_size);
-  printf("\tmanaged memory %d bytes\n", (1<<num_levels)*min_bucket_size);
+	//printf("BUDDY INITIALIZING\n");
+  //printf("\tlevels: %d\n", num_levels);
+  //printf("\tbitmap size: %d bits or %d bytes\n", bitmap->num_bits,bitmap->buffer_size);
+  //printf("\tbucket size:%d\n", min_bucket_size);
+  //printf("\tmanaged memory %d bytes\n", (1<<num_levels)*min_bucket_size);
 
   
 
@@ -163,10 +163,7 @@ void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
     printf("memory asked too big\n");
     return NULL;
   }
-	
-	
 
-	
 	int level = findLevel(size,alloc->memory_size);//we get the correct level 
 	
 	// if the level is too small, we pad it to max
@@ -182,7 +179,7 @@ void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
     printf("Error: Out of memory\n");
     return NULL; // no buddy no party 
 	}
-  printf("I'm going to set a bit in index:%d ", index);
+  //printf("I'm going to set a bit in index:%d ", index);
   BitMap_setBit(&alloc->bitmap, index, 0); //set the bit of the index 
     	
     	// we get the block size of the current level
@@ -192,8 +189,6 @@ void *BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
     	
     	
   int start_index = startIdx(index); //we get the start index
-    	
-    	
     	
   char* block_start = alloc->memory + (start_index * block_size); //the block we want to release
     	
@@ -226,8 +221,8 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
   char* block_start =(char*) mem; //the block in question
   block_start = block_start - sizeof(int);  
   int index = *(int*)block_start; //but we want to know the index
-  int level = levelIdx(index);
-  printf("this block is no more at index: %d , at this level %d\n", index, level);
+  //int level = levelIdx(index);
+  //printf("this block is no more at index: %d , at this level %d\n", index, level);
   
   BitMap_setBit(&alloc->bitmap, index, 1); //set the buddy to available 
   merge_buddies(alloc, index); //start merging 

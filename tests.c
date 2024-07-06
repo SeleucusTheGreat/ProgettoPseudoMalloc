@@ -17,13 +17,17 @@
 
 // small allocations 
 void small_buddy_tests() {  
+
+    printf("\n\n\n"); 
+    printf("-----------starting buddyAllocator tests-----------\n");
     char* memory = (char*)malloc(MEMORY_SIZE);
     uint8_t* bitmap_buffer = (uint8_t*)malloc(BITMAP_SIZE_BYTES);
     BuddyAllocator allocator;
     BuddyAllocator_init(&allocator, NUM_LEVELS, bitmap_buffer, BITMAP_SIZE_BYTES , memory, MEMORY_SIZE , MIN_BUCKET_SIZE);
     
     //test 1
-    printf("starting small buddy test num 1\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 1----\n");
     BuddyAllocator_printBitmap(&allocator);
     void* ptr1 = BuddyAllocator_malloc(&allocator, sizeof(int));
     assert(ptr1 != NULL);
@@ -35,8 +39,8 @@ void small_buddy_tests() {
 
 
     //test 2
-
-    printf("starting small buddy test num 2\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 2----\n");
     typedef struct GIGACHAD {
         int first;
         int second;
@@ -61,41 +65,44 @@ void small_buddy_tests() {
     BuddyAllocator_printBitmap(&allocator);
 
     //test 3
-    
-    printf("starting small buddy test num 3\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 3----\n");
     void* ptr3 = BuddyAllocator_malloc(&allocator, 50);
     assert(ptr3 != NULL);
     BuddyAllocator_printBitmap(&allocator);
 
     //test 4
-    
-    printf("starting small buddy test num 4\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 4----\n");
     BuddyAllocator_free(&allocator, chad);
     BuddyAllocator_printBitmap(&allocator);
 
     //test 5
-    
-    printf("starting small buddy test num 5\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 5----\n");
     void* ptr4 = BuddyAllocator_malloc(&allocator, 150);
     assert(ptr4 != NULL);
     BuddyAllocator_printBitmap(&allocator);
 
     //test 6
-    printf("starting small buddy test num 6\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 6----\n");
     BuddyAllocator_free(&allocator, ptr1);
     BuddyAllocator_printBitmap(&allocator);
     
     //test 7
-    printf("starting small buddy test num 7\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 7----\n");
     BuddyAllocator_free(&allocator, ptr3);
     BuddyAllocator_printBitmap(&allocator);
     
     //test 8
-    printf("starting small buddy test num 8\n");
+    printf("\n\n");
+    printf("----starting small buddy test num 8----\n");
     BuddyAllocator_free(&allocator, ptr4);
     BuddyAllocator_printBitmap(&allocator);
     
-
+    printf("\n\n");
     printf("all small buddy tests passed.\n");
     
 
@@ -105,7 +112,6 @@ void small_buddy_tests() {
 
 //chonky allocations
 void big_buddy_tests() {
-    
     //initialization
     char* memory = (char*)malloc(MEMORY_SIZE);
     uint8_t* bitmap_buffer = (uint8_t*)malloc(BITMAP_SIZE_BYTES);
@@ -115,7 +121,8 @@ void big_buddy_tests() {
 
 
     //test 1
-    printf("starting big boy test num 1\n");
+    printf("\n\n");
+    printf("----starting big boy test num 1----\n");
     BuddyAllocator_printBitmap(&allocator);
     void* ptr = BuddyAllocator_malloc(&allocator, MEMORY_SIZE / 2 - sizeof(int));
     assert(ptr != NULL);
@@ -123,26 +130,30 @@ void big_buddy_tests() {
     
     
    // test 2
-    printf("starting big boy test num 2\n");
+    printf("\n\n");
+    printf("----starting big boy test num 2----\n");
     BuddyAllocator_free(&allocator, ptr);
     BuddyAllocator_printBitmap(&allocator);
 
 
     //test 3
-    printf("starting big boy test num 3\n");
+    printf("\n\n");
+    printf("----starting big boy test num 3----\n");
     void* ptr11 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE/4 - sizeof(int));
     assert(ptr11 != NULL);
     BuddyAllocator_printBitmap(&allocator);
 
     //test 4
-    printf("starting big boy test num 4\n");
+    printf("\n\n");
+    printf("----starting big boy test num 4----\n");
     void* ptr4 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE- sizeof(int)); //this shouldn't work because we're out of memory
     assert(ptr4 == NULL);
     BuddyAllocator_printBitmap(&allocator);
 
 
     //test 5
-    printf("starting big boy test num 5\n");
+    printf("\n\n");
+    printf("----starting big boy test num 5----\n");
     BuddyAllocator_free(&allocator, ptr11);
     BuddyAllocator_printBitmap(&allocator);
     
@@ -150,35 +161,42 @@ void big_buddy_tests() {
 
 
     //test 6
-    printf("starting big boy test num 6\n");
+    printf("\n\n");
+    printf("----starting big boy test num 6----\n");
     void* ptr6 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE- sizeof(int)); //this should work
     assert(ptr6 != NULL);
     BuddyAllocator_printBitmap(&allocator);
     
 
     //test 7
-    printf("starting big boy test num 7\n");
+    printf("\n\n");
+    printf("----starting big boy test num 7----\n");
     BuddyAllocator_free(&allocator, ptr6);
     BuddyAllocator_printBitmap(&allocator);
 
 
 
     //test 8
-    printf("starting big boy test num 8\n");
+    printf("\n\n");
+    printf("----starting big boy test num 8----\n");
     void* ptr7 = BuddyAllocator_malloc(&allocator, MEMORY_SIZE); //this shouldn't work
     assert(ptr7 == NULL);
     BuddyAllocator_printBitmap(&allocator);
     
 
-    printf("Large allocation tests passed.\n");
+    printf("----Large allocation tests passed.----\n");
     free(memory);
     free(bitmap_buffer);
+    printf("\n\n");
+    printf("-----------ending buddyAllocator_tests-----------\n");
 }
 
 void mmap_tests() {
-
+    printf("\n\n\n");
+    printf("-----------starting mmap_tests-----------\n");
     // test 1
-    printf("starting malloc_mmap test num 1\n");
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 1----\n");
     int size1 = 1024;
     char* ptr1 = (char*)malloc_mmap(size1);
     assert(ptr1 != NULL);
@@ -187,20 +205,23 @@ void mmap_tests() {
     printf("Test 1 passed\n");
 
     // test 2
-    printf("starting malloc_mmap test num 2\n");
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 2----\n");
     void* ptr2 = malloc_mmap(0);
     assert(ptr2 == NULL);
     printf("Test 2 passed\n");
 
-    // test 3:
-    printf("starting malloc_mmap test num 3\n");  
+    // test 3
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 3----\n");  
     int size3 = 1024 * 1024 * 10;  // 10 MB
     void* ptr3 = malloc_mmap(size3);
     assert(ptr3 != NULL);
     printf("Test 3 passed\n");
 
     // test 4
-    printf("starting malloc_mmap test num 4\n");
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 4----\n");
     typedef struct GIGACHAD {
         int first;
         int second;
@@ -224,26 +245,126 @@ void mmap_tests() {
     printf("Test 4 passed\n");
 
     //test 5
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 5----\n");
     free_mmap(ptr1);
     printf("Test 5 passed\n");
     
     //test 6
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 6----\n");
     free_mmap(ptr2);
     printf("Test 6 passed\n");
 
     //test 7
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 7----\n");
     free_mmap(ptr3);
     printf("Test 7 passed\n");
     
     //test 8
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 8----\n");
     free_mmap(chad);
     printf("Test 8 passed\n");
 
-    printf("malloc_mmap allocation test passed.\n");
+    //test 9
+    printf("\n\n");
+    printf("----starting malloc_mmap test num 9----\n");
+    void* giant = malloc_mmap((1 << 30) + 1 );
+    assert(giant == NULL);
+     printf("\n\n");
+    printf("-----------malloc_mmap allocation tests passed.-----------\n");
 }
 
 void pseudoMalloc_tests() {
-        //tests here
+    printf("\n\n\n");
+    printf("-----------starting pseudoMalloc_tests-------------\n");
+    // Constants (replace these with the actual values from your implementation)
+    const int BUDDY_MAX_SIZE = 1024;  // Assuming PAGE_SIZE/4, with PAGE_SIZE = 4096
+    const int MAX_SIZE_MMAP = 1 << 30;  // 1GB
+
+    // Test 1: Allocate small memory (should use buddy allocator)
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 1----\n");
+    void* small = PseudoMalloc(100);
+    assert(small != NULL);
+    memset(small, 'a', 100);
+    PseudoFree(small);
+
+    // Test 2: Allocate memory just below BUDDY_MAX_SIZE
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 2----\n");
+    void* medium = PseudoMalloc(BUDDY_MAX_SIZE - sizeof(int));
+    assert(medium != NULL);
+    memset(medium, 'b', BUDDY_MAX_SIZE - sizeof(int));
+    PseudoFree(medium);
+
+    // Test 3: Allocate memory just above BUDDY_MAX_SIZE (should use mmap)
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 3----\n");
+    void* large = PseudoMalloc(BUDDY_MAX_SIZE + 1 - sizeof(int));
+    assert(large != NULL);
+    memset(large, 'c', BUDDY_MAX_SIZE + 1 - sizeof(int));
+    PseudoFree(large);
+
+    // Test 4: Allocate memory of size 0 (should return NULL)
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 4----\n");
+    void* zero_size = PseudoMalloc(0);
+    assert(zero_size == NULL);
+
+    // Test 5: Allocate memory larger than MAX_SIZE_MMAP (should return NULL)
+    printf("----starting pseudoMalloc test num 5----\n");
+    void* too_large = PseudoMalloc(MAX_SIZE_MMAP + 1);
+    assert(too_large == NULL);
+
+    // Test 6: Allocate multiple small chunks to fill buddy allocator
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 6----\n");
+    void* chunks[1024];
+    for (int i = 0; i < 1024; i++) {
+        chunks[i] = PseudoMalloc(BUDDY_MAX_SIZE-sizeof(int));
+        assert(chunks[i] != NULL);
+    }
+
+    // Test 7: Attempt to allocate when buddy is full (should use mmap)
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 7----\n");
+    void* overflow = PseudoMalloc(BUDDY_MAX_SIZE);
+    assert(overflow != NULL);
+
+    // Free all allocated chunks
+    for (int i = 0; i < 1024; i++) {
+        PseudoFree(chunks[i]);
+    }
+    PseudoFree(overflow);
+
+    // Test 8: Multiple small allocation of the same size
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 8----\n");
+    void* reuse1 = PseudoMalloc(50);
+    void* reuse2 = PseudoMalloc(50);
+    PseudoFree(reuse1);
+    void* reuse3 = PseudoMalloc(50);
+    assert(reuse1 == reuse3);
+    PseudoFree(reuse2);
+    PseudoFree(reuse3);
+
+    // Test 9: Try to free NULL pointer 
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 9----\n");
+    PseudoFree(NULL);
+
+    // Test 10: Allocate memory of size 1 (minimum allocation)
+    printf("\n\n");
+    printf("----starting pseudoMalloc test num 10----\n");
+    void* min_alloc = PseudoMalloc(1);
+    assert(min_alloc != NULL);
+    PseudoFree(min_alloc);
+    printf("\n\n");
+    printf("-----------All pseudoMalloc tests passed-----------\n");
+
 }
 
 int main() {

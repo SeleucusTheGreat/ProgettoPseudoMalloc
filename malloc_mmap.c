@@ -12,15 +12,15 @@
 void* malloc_mmap(int size) {
     if (size == 0) return NULL;
     if (size > MAX_SIZE) {
+        printf("memory required is too large\n");
         return NULL;
-        printf("memory required is too large ");
     }
 
     void* memory = mmap(NULL, size + sizeof(int), PROT_READ | PROT_WRITE , MAP_PRIVATE | MAP_ANONYMOUS , -1, 0);
     *(int*) (memory) = size + KEY_VALUE;
     if (memory == MAP_FAILED) {
         return NULL;
-        printf("there was an error during the allocation of the mmap for the malloc ");
+        printf("there was an error during the allocation of the mmap for the malloc1n");
     }
     return memory + sizeof(int);
     
@@ -35,13 +35,13 @@ void free_mmap(void* memory) {
     block_start = block_start - sizeof(int);
     int size = *(int*)block_start;
     if(size <= KEY_VALUE){
-        printf("this block should belong to the buddy allocator");
+        printf("this block should belong to the buddy allocator\n");
         return;
     }
     size = size - KEY_VALUE;
     
     if ((size == 0)){
-        printf("this memory shouldn't be size zero");
+        printf("this memory shouldn't be size zero\n");
         return;
     }
     if (munmap(block_start, size) != 0) {

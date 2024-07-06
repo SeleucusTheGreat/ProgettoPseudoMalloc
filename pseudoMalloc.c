@@ -28,14 +28,25 @@ void pseudoMallocInit() {
 }
 
 void* PseudoMalloc(int size) {
-    if (size<=0) return;
-    if (size>str.MAX_SIZE_MMAP) return;
+    void* memory;
+    if (size<=0) return NULL;
+    if (size>str.MAX_SIZE_MMAP)  {printf("too much memory asked\n"); return NULL; }
 
-    if (size >str.BUDDY_MAX_SIZE) {
-        malloc_mmap(size);
+    if (size >str.BUDDY_MAX_SIZE) {  //use the mmap
+        return malloc_mmap(size);
+
     }
-    else {
-        BuddyAllocator_malloc(&str.buddy, size);
+    else {  //use the buddy allocator 
+
+        memory =  BuddyAllocator_malloc(&str.buddy, size);
+        
+        
+        if (memory==NULL) {   // if the buddy is full then use the mmap 
+            printf("the buddy is out of memory\n");
+            return malloc_mmap(size);
+        } else {
+            return memory;
+        }
     }
 }
 
