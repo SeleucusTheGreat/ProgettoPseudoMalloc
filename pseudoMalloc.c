@@ -27,7 +27,7 @@ void pseudoMallocInit() {
     printf("page size is %d\n",str.PAGE_SIZE); 
 }
 
-void* PseudoMalloc(int size) {
+void* pseudoMalloc(int size) {
     void* memory;
     if (size<=0) return NULL;
     if (size>str.MAX_SIZE_MMAP)  {printf("too much memory asked\n"); return NULL; }
@@ -50,7 +50,7 @@ void* PseudoMalloc(int size) {
     }
 }
 
-void PseudoFree(void* memory){
+void pseudoFree(void* memory){
     if (memory==NULL) return;
     char* block_start =(char*) memory; 
     block_start = block_start - sizeof(int);  

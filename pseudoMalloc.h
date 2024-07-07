@@ -14,5 +14,5 @@ typedef struct {
 } PseudoMallocStruct;
 
 void pseudoMallocInit(void) __attribute__((constructor));
-void* PseudoMalloc(int size);
-void PseudoFree(void* memory);
+void* pseudoMalloc(int size);
+void pseudoFree(void* memory);

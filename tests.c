@@ -13,7 +13,10 @@
 #define BITMAP_SIZE_BYTES 262144
 #define BITMAP_SIZE_BITS 2097151
 
-
+void small_buddy_tests();
+void big_buddy_tests();
+void mmap_tests();
+void pseudoMalloc_tests();
 
 // small allocations 
 void small_buddy_tests() {  
@@ -287,36 +290,36 @@ void pseudoMalloc_tests() {
     // Test 1: Allocate small memory (should use buddy allocator)
     printf("\n\n");
     printf("----starting pseudoMalloc test num 1----\n");
-    void* small = PseudoMalloc(100);
+    void* small = pseudoMalloc(100);
     assert(small != NULL);
     memset(small, 'a', 100);
-    PseudoFree(small);
+    pseudoFree(small);
 
     // Test 2: Allocate memory just below BUDDY_MAX_SIZE
     printf("\n\n");
     printf("----starting pseudoMalloc test num 2----\n");
-    void* medium = PseudoMalloc(BUDDY_MAX_SIZE - sizeof(int));
+    void* medium = pseudoMalloc(BUDDY_MAX_SIZE - sizeof(int));
     assert(medium != NULL);
     memset(medium, 'b', BUDDY_MAX_SIZE - sizeof(int));
-    PseudoFree(medium);
+    pseudoFree(medium);
 
     // Test 3: Allocate memory just above BUDDY_MAX_SIZE (should use mmap)
     printf("\n\n");
     printf("----starting pseudoMalloc test num 3----\n");
-    void* large = PseudoMalloc(BUDDY_MAX_SIZE + 1 - sizeof(int));
+    void* large = pseudoMalloc(BUDDY_MAX_SIZE + 1 - sizeof(int));
     assert(large != NULL);
     memset(large, 'c', BUDDY_MAX_SIZE + 1 - sizeof(int));
-    PseudoFree(large);
+    pseudoFree(large);
 
     // Test 4: Allocate memory of size 0 (should return NULL)
     printf("\n\n");
     printf("----starting pseudoMalloc test num 4----\n");
-    void* zero_size = PseudoMalloc(0);
+    void* zero_size = pseudoMalloc(0);
     assert(zero_size == NULL);
 
     // Test 5: Allocate memory larger than MAX_SIZE_MMAP (should return NULL)
     printf("----starting pseudoMalloc test num 5----\n");
-    void* too_large = PseudoMalloc(MAX_SIZE_MMAP + 1);
+    void* too_large = pseudoMalloc(MAX_SIZE_MMAP + 1);
     assert(too_large == NULL);
 
     // Test 6: Allocate multiple small chunks to fill buddy allocator
@@ -324,54 +327,68 @@ void pseudoMalloc_tests() {
     printf("----starting pseudoMalloc test num 6----\n");
     void* chunks[1024];
     for (int i = 0; i < 1024; i++) {
-        chunks[i] = PseudoMalloc(BUDDY_MAX_SIZE-sizeof(int));
+        chunks[i] = pseudoMalloc(BUDDY_MAX_SIZE-sizeof(int));
         assert(chunks[i] != NULL);
     }
 
     // Test 7: Attempt to allocate when buddy is full (should use mmap)
     printf("\n\n");
     printf("----starting pseudoMalloc test num 7----\n");
-    void* overflow = PseudoMalloc(BUDDY_MAX_SIZE);
+    void* overflow = pseudoMalloc(BUDDY_MAX_SIZE);
     assert(overflow != NULL);
 
     // Free all allocated chunks
     for (int i = 0; i < 1024; i++) {
-        PseudoFree(chunks[i]);
+        pseudoFree(chunks[i]);
     }
-    PseudoFree(overflow);
+    pseudoFree(overflow);
 
     // Test 8: Multiple small allocation of the same size
     printf("\n\n");
     printf("----starting pseudoMalloc test num 8----\n");
-    void* reuse1 = PseudoMalloc(50);
-    void* reuse2 = PseudoMalloc(50);
-    PseudoFree(reuse1);
-    void* reuse3 = PseudoMalloc(50);
+    void* reuse1 = pseudoMalloc(50);
+    void* reuse2 = pseudoMalloc(50);
+    pseudoFree(reuse1);
+    void* reuse3 = pseudoMalloc(50);
     assert(reuse1 == reuse3);
-    PseudoFree(reuse2);
-    PseudoFree(reuse3);
+    pseudoFree(reuse2);
+    pseudoFree(reuse3);
 
     // Test 9: Try to free NULL pointer 
     printf("\n\n");
     printf("----starting pseudoMalloc test num 9----\n");
-    PseudoFree(NULL);
+    pseudoFree(NULL);
 
     // Test 10: Allocate memory of size 1 (minimum allocation)
     printf("\n\n");
     printf("----starting pseudoMalloc test num 10----\n");
-    void* min_alloc = PseudoMalloc(1);
+    void* min_alloc = pseudoMalloc(1);
     assert(min_alloc != NULL);
-    PseudoFree(min_alloc);
+    pseudoFree(min_alloc);
     printf("\n\n");
     printf("-----------All pseudoMalloc tests passed-----------\n");
 
 }
 
-int main() {
-    small_buddy_tests();
-    big_buddy_tests();
-    mmap_tests();
-    pseudoMalloc_tests();
+
+int main(int argc, char *argv[]) {
+    if (argc == 1) {
+        // No arguments provided, default to pseudoMalloc_tests
+        pseudoMalloc_tests();
+    } else {
+        for (int i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "-b") == 0) {
+                small_buddy_tests();
+                big_buddy_tests();
+            } else if (strcmp(argv[i], "-m") == 0) {
+                mmap_tests();
+            } else if (strcmp(argv[i], "-p") == 0) {
+                pseudoMalloc_tests();
+            } else {
+                printf("Unknown option: %s\n", argv[i]);
+            }
+        }
+    }
     printf("All tests passed successfully!\n");
     return 0;
 }
